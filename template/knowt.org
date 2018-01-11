@@ -61,13 +61,13 @@
    By jumping around the document using powerful searches, you can organize a
    ton of data however you want without losing track or suffering the headache
    of multiple files sprawled about. Everything you know in one version
-   controlled placed. :)
+   controlled place. :)
 
 ** Quickstart
 
    First, make sure you have either Emacs or Docker installed.
 
-   Just clone the repository to install:
+   Clone the repository to install:
 
 #+BEGIN_SRC sh
   git clone https://github.com/dustinlacewell/knowt.git ~/src/
@@ -79,12 +79,12 @@
    A single argument is required, the path of the Knowt repository:
 
 #+BEGIN_SRC sh
-> bin/knowt $PWD
+> bin/knowt ~/src/knowt
 Created template at ~/.knowt/knowt.org
 Created template at ~/.knowt/.emacs.d/init.org
 #+END_SRC
 
-   - *knowt.org* : a starter knowt file to get you going
+   - *knowt.org* : a starter knowt file to get you going (this file!)
    - *init.org* : some nice starter emacs customizations
 
    Emacs should have opened up and you should be looking at this document!
