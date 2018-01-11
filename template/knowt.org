@@ -1,0 +1,93 @@
+* Knowt Help
+
+  @ = right-option / f19
+
+  |------+----------------+-----+-----|
+  | bind | desc           | doc | src |
+  |------+----------------+-----+-----|
+  | @ @  | Reset          | [[file:knowt-mode.el::defun reset][*]]   | [[elisp:(find-function 'reset)][*]]   |
+  | s    | Occur Search   | [[elisp:(describe-function 'helm-occur)][*]]   | [[elisp:(find-function 'helm-occur][*]]   |
+  | h    | Heading Search | [[elisp:(describe-function 'helm-org-in-buffer-headings)][*]]   | [[elisp:(find-function 'helm-org-in-buffer-headings)][*]]   |
+  |------+----------------+-----+-----|
+
+  [[file:knowt-mode.el][knowt-mode]] [[elisp:(progn (unload-feature 'knowt-mode)(load-file "./knowt-mode.el")(knowt-mode 1))][↻]]
+** What is Knowt
+
+   Knowt is a tool for knowing what you know.
+
+   Built upon the all-powerful [[https://orgmode.org/][Org-mode]] for Emacs it provides a personal
+   knowledge-base in the form of a monolithic plain-text file.
+
+   - Keep track of what you need to do
+   - Quickly add and retrieve heirarchical data
+   - Throw away your bookmark manager
+   - Keep notes on acquiantances
+   - Curate a quote database
+
+   The possibilities are endless!
+
+** What's it like?
+
+   You maintain a single plain-text file =~/.knowt/knowt.org= in which you use
+   typical org-mode headers to organize your data:
+
+#+BEGIN_SRC org-mode
+* Work
+** Project A
+*** TODO fix that one thing
+*** DONE proof of concept
+*** WAITING get that thing approved
+** Project B
+*** TODO what is it
+    i don't even know
+* Research
+** Functional Programming
+*** Monads
+**** F# for fun and profit       :bm:
+#+END_SRC
+
+   Many people are familiar with Org-mode's basic outlining and todo
+   features. Maybe even they've even used the table formatting features!
+   Org-mode is so so much more. You can spend days learning about its agenda
+   aggregation reporting - but! not many people do.
+
+   Knowt tries to keep you in the document by instead leaning on the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Narrowing.html][Narrowing]]
+   and [[https://www.gnu.org/software/emacs/manual/html_node/eintr/Narrowing-advantages.html#Narrowing-advantages][Widening]] features of Emacs. With a bit of elisp, a number of quick
+   shortcut bindings are provided for searching and narrowing the view of the
+   document to just what is of interest. Of course, it is just as easy to then
+   restore the whole document.
+
+   By jumping around the document using powerful searches, you can organize a
+   ton of data however you want without losing track or suffering the headache
+   of multiple files sprawled about. Everything you know in one version
+   controlled placed. :)
+
+** Quickstart
+
+   First, make sure you have either Emacs or Docker installed.
+
+   Just clone the repository to install:
+
+#+BEGIN_SRC sh
+  git clone https://github.com/dustinlacewell/knowt.git ~/src/
+#+END_SRC
+
+   Now execute the script. On startup some templates will be placed in
+   =~/.knowt= if there's nothing there yet.
+
+   A single argument is required, the path of the Knowt repository:
+
+#+BEGIN_SRC sh
+> bin/knowt $PWD
+Created template at ~/.knowt/knowt.org
+Created template at ~/.knowt/.emacs.d/init.org
+#+END_SRC
+
+   - *knowt.org* : a starter knowt file to get you going
+   - *init.org* : some nice starter emacs customizations
+
+   Emacs should have opened up and you should be looking at this document!
+
+* Work
+
+** Tasks

@@ -1,0 +1,240 @@
+* Package Management
+** Initialize package management
+#+BEGIN_SRC emacs-lisp
+  (require 'package)
+  (setq package-list '(use-package req-package))
+
+  (setq package-archives '(("MELPA" . "http://melpa.org/packages/")
+                           ("ELPA" . "http://tromey.com/elpa/")
+                           ("gnu"  . "http://elpa.gnu.org/packages/"))
+        load-prefer-newer t
+        package--init-file-ensured t
+        package-enable-at-startup nil)
+
+  (unless (file-directory-p package-user-dir)
+    (make-directory package-user-dir t))
+
+  (package-initialize)
+
+#+END_SRC
+
+** Minimize package installation warnings
+#+BEGIN_SRC emacs-lisp
+  (setq byte-compile-warnings nil
+        gnutls-min-prime-bits 4096)
+#+END_SRC
+** Fetch package listing
+#+BEGIN_SRC emacs-lisp
+  (unless package-archive-contents
+    (package-refresh-contents))
+#+END_SRC
+** Install base packages
+#+BEGIN_SRC emacs-lisp
+  (setq package-list '(el-get use-package req-package))
+  (dolist (package package-list)
+    (unless (package-installed-p package)
+      (package-install package))
+    (require package))
+
+  (setq use-package-always-ensure t)
+#+END_SRC
+* Disable Customizations
+Since all the configuration should live in this version-controlled
+file, discard any customizations made inside Emacs.
+
+#+BEGIN_SRC emacs-lisp
+  (setq custom-file (make-temp-file ""))
+#+END_SRC
+
+* Autocompletion
+** Enable company-mode
+#+BEGIN_SRC emacs-lisp
+  (req-package company
+    :config (add-hook 'after-init-hook 'global-company-mode))
+#+END_SRC
+* Autosaves
+Auto-save will periodically save your file to backup file while you
+edit. This is great if something goes catastrophically wrong to Emacs!
+** Store autosaves in a single place
+#+BEGIN_SRC emacs-lisp
+  (defvar emacs-autosave-directory
+    (concat user-emacs-directory "autosaves/")
+    "This variable dictates where to put auto saves. It is set to a
+    directory called autosaves located wherever your .emacs.d/ is
+    located.")
+
+  (unless (file-exists-p emacs-autosave-directory)
+      (make-directory emacs-autosave-directory))
+
+  (setq auto-save-file-name-transforms `((".*"
+  ,emacs-autosave-directory t)))
+#+END_SRC
+** Save every 20 secs or 20 keystrokes
+#+BEGIN_SRC emacs-lisp
+  (setq auto-save-timeout 20
+        auto-save-interval 20)
+#+END_SRC
+
+** Autosave every buffer that visits a file
+#+BEGIN_SRC emacs-lisp
+  (setq auto-save-default t)
+#+END_SRC
+* Backups
+Backups are created everytime a buffer is saved. This is really useful
+for recovering work that takes place between version-control commits
+or on unversioned files.
+
+** Store backups with the autosaves
+#+BEGIN_SRC emacs-lisp
+  (setq backup-directory-alist
+        `((".*" . ,emacs-autosave-directory)))
+#+END_SRC
+
+** Keep 10 backups
+#+BEGIN_SRC emacs-lisp
+  (setq kept-new-versions 10
+        kept-old-verisons 0)
+#+END_SRC
+
+** Delete old backups
+#+BEGIN_SRC emacs-lisp
+  (setq delete-old-versions t)
+#+END_SRC
+
+** Copy files to avoid various problems
+#+BEGIN_SRC emacs-lisp
+  (setq backup-by-copying t)
+#+END_SRC
+
+** Backup files even if version controlled
+#+BEGIN_SRC emacs-lisp
+  (setq vc-make-backup-files t)
+#+END_SRC
+
+** Backup every save
+#+BEGIN_SRC emacs-lisp
+  (req-package backup-each-save
+    :config (add-hook 'after-save-hook 'backup-each-save))
+#+END_SRC
+* Helm
+[[https://github.com/emacs-helm/helm][Helm]] is a visual incremental-completion helper.
+** Core bindings
+#+BEGIN_SRC emacs-lisp
+  (req-package helm
+    :bind (("M-x" . helm-M-x)
+           ("C-x C-f" . helm-find-files)
+           ("C-x b" . helm-buffers-list)
+           ("C-c y" . helm-show-kill-ring)
+           ("C-x C-r" . helm-recentf)
+           ("C-x r l" . helm-bookmarks)
+           :map helm-map
+           ("C-;" . ace-jump-helm-line))
+    :config (require 'helm-config))
+#+END_SRC
+
+** Ace makes selection even faster
+#+BEGIN_SRC emacs-lisp
+    (req-package ace-jump-helm-line
+      :commands ace-jump-helm-line
+      :require helm)
+#+END_SRC
+
+** Have Helm show us keybinding info
+#+BEGIN_SRC emacs-lisp
+  (req-package helm-descbinds
+    :commands helm-descbinds
+    :bind (("C-h b" . helm-descbinds))
+    :require helm)
+#+END_SRC
+
+* Look and Feel
+** Use badger-theme
+#+BEGIN_SRC emacs-lisp
+  (req-package badger-theme
+    :config (load-theme 'badger t))
+#+END_SRC
+
+** Disable the menubar, toolbar and scrollbar
+#+BEGIN_SRC emacs-lisp
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+#+END_SRC
+
+** Disable startup messages
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-message t
+        initial-scratch-message nil)
+#+END_SRC
+
+** Use a blinking box cursor
+#+BEGIN_SRC emacs-lisp
+  (setq-default cursor-type 'box)
+  (blink-cursor-mode 1)
+#+END_SRC
+
+** Show column number
+#+BEGIN_SRC emacs-lisp
+  (column-number-mode 1)
+#+END_SRC
+
+** Always use spaces
+#+BEGIN_SRC emacs-lisp
+  (setq-default indent-tabs-mode nil)
+#+END_SRC
+
+** Fill at 79 characters
+#+BEGIN_SRC emacs-lisp
+  (setq-default fill-column 79)
+#+END_SRC
+
+** Autofill org-mode
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook 'turn-on-auto-fill)
+#+END_SRC
+
+** Always show whitespace
+#+BEGIN_SRC emacs-lisp
+  (req-package whitespace
+    :diminish global-whitespace-mode
+    :init
+    (setq whitespace-style
+          '(face tabs newline trailing tab-mark space-before-tab space-after-tab))
+    (global-whitespace-mode 1))
+#+END_SRC
+** Enable prettified symbols
+Various symbols will be replaced with nice looking unicode glyphs.
+#+BEGIN_SRC emacs-lisp
+  (global-prettify-symbols-mode 1)
+#+END_SRC
+
+** Enable electric-pair mode
+Matching closed brackets are inserted for any typed open bracket.
+#+BEGIN_SRC emacs-lisp
+  (electric-pair-mode 1)
+#+END_SRC
+
+** Enable rainbow delimiters
+#+BEGIN_SRC emacs-lisp
+  (req-package rainbow-delimiters
+    :commands rainbow-delimiters-mode
+    :init
+    (custom-set-variables '(rainbow-delimiters-max-face-count 8))
+    (add-hook-exec 'emacs-lisp-mode (lambda () (rainbow-delimiters-mode 1))))
+#+END_SRC
+
+** Show a clock on the modeline
+#+BEGIN_SRC emacs-lisp
+  (req-package timeclock
+    :config (progn (display-time-mode 1)))
+#+END_SRC
+
+** Shorten yes-no prompts
+#+BEGIN_SRC emacs-lisp
+  (fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+* Finish package installations
+#+BEGIN_SRC emacs-lisp
+  (req-package-finish)
+#+END_SRC

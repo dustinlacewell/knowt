@@ -1,0 +1,90 @@
+#!/usr/bin/env python
+
+import os
+import shutil
+import subprocess
+import sys
+import shlex
+
+
+def source_directory():
+    if len(sys.argv) > 1:
+        return sys.argv[1]
+    return os.environ.get("KNOWT_SOURCE_DIRECTORY")
+
+def user_directory():
+    return os.environ.get("KNOWT_USER_DIRECTORY", os.path.expanduser("~/.knowt"))
+
+def emacs_directory():
+    return os.path.join(user_directory(), ".emacs.d")
+
+def knowt_filename():
+    return os.path.join(user_directory(), "knowt.org")
+
+def init_filename():
+    return os.path.join(emacs_directory(), "init.org")
+
+def establish_user_directory():
+    if not os.path.exists(user_directory()):
+        os.mkdir(user_directory())
+
+def establish_knowt_file():
+    if not os.path.exists(knowt_filename()):
+        src = os.path.join(source_directory(), "template", "knowt.org")
+        shutil.copyfile(src, knowt_filename())
+        print "Created template at {}".format(knowt_filename())
+
+def establish_emacs_directory():
+    if not os.path.exists(emacs_directory()):
+        os.mkdir(emacs_directory())
+
+def establish_init_file():
+    if not os.path.exists(init_filename()):
+        src = os.path.join(source_directory(), "template", ".emacs.d", "init.org")
+        shutil.copyfile(src, init_filename())
+        print "Created template at {}".format(init_filename)
+
+def user_app_strat():
+    path = os.path.expanduser("~/Applications/Emacs.app/Contents/MacOS/Emacs")
+    return path if os.path.exists(path) else None
+
+def emacs_strat():
+    path = subprocess.check_output(["command", "-v", "emacs"])
+    return path if os.path.exists(path) else None
+
+def docker_strat():
+    def run_docker():
+        user_mnt = "-v {}:/home/emacs/.knowt".format(user_directory())
+        source_mnt = "-v {}:/knowt".format(source_directory())
+        source_env = "-e KNOWT_SOURCE_DIRECTORY=/knowt"
+        string = "docker run --rm -it {} {} {} jare/emacs emacs -q --load /knowt/elisp/init.el".format(user_mnt, source_mnt, source_env)
+        parts = shlex.split(string)
+        command = parts[0]
+        args = parts[1:]
+        print "DOCKER COMMAND", parts
+        os.execvp(command, parts)
+
+    path = subprocess.check_output(["command", "-v", "docker"])
+    print "DOCKER PATH", path
+    return run_docker
+
+if "__main__" == __name__:
+    if len(sys.argv) < 2 and "KNOWT_SOURCE_DIRECTORY" not in os.environ:
+        print "Must pass Knowt elisp source directory or provide KNOWT_SOURCE_DIRECTORY."
+        exit()
+
+    establish_user_directory()
+    establish_knowt_file()
+    establish_emacs_directory()
+    establish_init_file()
+
+    try:
+        strategies = list(f() for f in (docker_strat, user_app_strat, emacs_strat, docker_strat))
+        print strategies
+        command = next(item for item in strategies if item is not None)
+        if isinstance(command, basestring):
+            os.execv(command, ("-q", "--load", os.path.join(source_directory(), "elisp", "init.el")))
+        else:
+            command()
+    except StopIteration:
+        print "Couldn't find an emacs to run!"
