@@ -10,7 +10,8 @@
   | h    | Heading Search | [[elisp:(describe-function 'helm-org-in-buffer-headings)][*]]   | [[elisp:(find-function 'helm-org-in-buffer-headings)][*]]   |
   |------+----------------+-----+-----|
 
-  [[file:knowt-mode.el][knowt-mode]] [[elisp:(progn (unload-feature 'knowt-mode)(load-file "./knowt-mode.el")(knowt-mode 1))][↻]]
+  [[elisp:(find-file (knowt-mode-org-file))][knowt-mode]] [[elisp:(reload)][↻]]
+
 ** What is Knowt
 
    Knowt is a tool for knowing what you know.
