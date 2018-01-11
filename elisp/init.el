@@ -1,10 +1,12 @@
 ;; source path - based on init file
 ;; user path - pased on environment variable
-(setq user-init-file load-file-name)
 
-(defun knowt-source-directory ()
-  (file-name-directory user-init-file))
-(message (format "knowt-source-directory: %s" (knowt-source-directory)))
+(defun knowt-elisp-directory ()
+  (concat (getenv "KNOWT_SOURCE_DIRECTORY") "elisp/"))
+(message (format "knowt-elisp-directory: %s" (knowt-elisp-directory)))
+
+(defun user-init-file () (concat (knowt-elisp-directory) "elisp" "init.el"))
+(message (format "user-init-file: %s" (user-init-file)))
 
 (defun knowt-user-directory ()
   (file-name-as-directory (or (getenv "KNOWT_USER_DIRECTORY") (expand-file-name "~/.knowt/"))))
@@ -23,7 +25,7 @@
 (message (format "knowt-user-file: %s" (knowt-user-file "FOO")))
 
 (defun knowt-mode-org-file ()
-  (concat (knowt-source-directory) "knowt-mode.org"))
+  (concat (knowt-elisp-directory) "knowt-mode.org"))
 (message (format "knowt-mode-org-file: %s" (knowt-mode-org-file)))
 
 (defun knowt-mode-el-file ()
@@ -31,15 +33,15 @@
 (message (format "knowt-mode-el-file: %s" (knowt-mode-el-file)))
 
 (defun knowt-user-org-file ()
-  (concat (knowt-emacs-directory) "custom.org"))
+  (concat (knowt-emacs-directory) "init.org"))
 (message (format "knowt-user-org-file: %s" (knowt-user-org-file)))
 
 (defun knowt-user-el-file ()
-  (concat (knowt-emacs-directory) "custom.el"))
+  (concat (knowt-emacs-directory) "init.el"))
 (message (format "knowt-user-el-file: %s" (knowt-user-el-file)))
 
 (defun knowt-build-el-file ()
-  (concat (knowt-source-directory) "org-build.el"))
+  (concat (knowt-elisp-directory) "org-build.el"))
 (message (format "knowt-build-el-file: %s" (knowt-build-el-file)))
 
 (setq user-init-file load-file-name)
