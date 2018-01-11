@@ -56,8 +56,8 @@ def docker_strat():
     def run_docker():
         user_mnt = "-v {}:/home/emacs/.knowt".format(user_directory())
         source_mnt = "-v {}:/knowt".format(source_directory())
-        source_env = "-e KNOWT_SOURCE_DIRECTORY=/knowt"
-        string = "docker run --rm -it {} {} {} jare/emacs emacs -q --load /knowt/elisp/init.el".format(user_mnt, source_mnt, source_env)
+        source_env = "-e KNOWT_SOURCE_DIRECTORY=/knowt/"
+        string = "docker run --rm -it {} {} {} jare/emacs emacs --debug-init -q --load /knowt/elisp/init.el".format(user_mnt, source_mnt, source_env)
         parts = shlex.split(string)
         command = parts[0]
         args = parts[1:]
