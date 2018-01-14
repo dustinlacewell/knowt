@@ -8,6 +8,7 @@ import shlex
 
 
 def source_directory():
+    return os.path.join(os.path.dirname(__file__), "..")
     if len(sys.argv) > 1:
         return sys.argv[1]
     return os.environ.get("KNOWT_SOURCE_DIRECTORY")
@@ -71,9 +72,9 @@ def docker_strat():
     return run_docker
 
 if "__main__" == __name__:
-    if len(sys.argv) < 2 and "KNOWT_SOURCE_DIRECTORY" not in os.environ:
-        print "Must pass Knowt elisp source directory or provide KNOWT_SOURCE_DIRECTORY."
-        exit()
+    # if len(sys.argv) < 2 and "KNOWT_SOURCE_DIRECTORY" not in os.environ:
+    #     print "Must pass Knowt elisp source directory or provide KNOWT_SOURCE_DIRECTORY."
+    #     exit()
 
     establish_user_directory()
     establish_knowt_file()
