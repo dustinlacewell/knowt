@@ -38,24 +38,22 @@
 
   (setq use-package-always-ensure t)
 #+END_SRC
-* Disable Customizations
-Since all the configuration should live in this version-controlled
-file, discard any customizations made inside Emacs.
-
+* Sensible Defaults
+** Use Fn as Hyper
+   Knowt uses =hyper= as the prefix for the default bindings.
 #+BEGIN_SRC emacs-lisp
-  (setq custom-file (make-temp-file ""))
+  (setq ns-function-modifier 'hyper)  ; make Fn key do Hyper
 #+END_SRC
-
-* Autocompletion
-** Enable company-mode
+** Autocompletion
+*** Enable company-mode
 #+BEGIN_SRC emacs-lisp
   (req-package company
     :config (add-hook 'after-init-hook 'global-company-mode))
 #+END_SRC
-* Autosaves
+** Autosaves
 Auto-save will periodically save your file to backup file while you
 edit. This is great if something goes catastrophically wrong to Emacs!
-** Store autosaves in a single place
+*** Store autosaves in a single place
 #+BEGIN_SRC emacs-lisp
   (defvar emacs-autosave-directory
     (concat user-emacs-directory "autosaves/")
@@ -69,84 +67,53 @@ edit. This is great if something goes catastrophically wrong to Emacs!
   (setq auto-save-file-name-transforms `((".*"
   ,emacs-autosave-directory t)))
 #+END_SRC
-** Save every 20 secs or 20 keystrokes
+*** Save every 20 secs or 20 keystrokes
 #+BEGIN_SRC emacs-lisp
   (setq auto-save-timeout 20
         auto-save-interval 20)
 #+END_SRC
 
-** Autosave every buffer that visits a file
+*** Autosave every buffer that visits a file
 #+BEGIN_SRC emacs-lisp
   (setq auto-save-default t)
 #+END_SRC
-* Backups
+** Backups
 Backups are created everytime a buffer is saved. This is really useful
 for recovering work that takes place between version-control commits
 or on unversioned files.
 
-** Store backups with the autosaves
+*** Store backups with the autosaves
 #+BEGIN_SRC emacs-lisp
   (setq backup-directory-alist
         `((".*" . ,emacs-autosave-directory)))
 #+END_SRC
 
-** Keep 10 backups
+*** Keep 10 backups
 #+BEGIN_SRC emacs-lisp
   (setq kept-new-versions 10
         kept-old-verisons 0)
 #+END_SRC
 
-** Delete old backups
+*** Delete old backups
 #+BEGIN_SRC emacs-lisp
   (setq delete-old-versions t)
 #+END_SRC
 
-** Copy files to avoid various problems
+*** Copy files to avoid various problems
 #+BEGIN_SRC emacs-lisp
   (setq backup-by-copying t)
 #+END_SRC
 
-** Backup files even if version controlled
+*** Backup files even if version controlled
 #+BEGIN_SRC emacs-lisp
   (setq vc-make-backup-files t)
 #+END_SRC
 
-** Backup every save
+*** Backup every save
 #+BEGIN_SRC emacs-lisp
   (req-package backup-each-save
     :config (add-hook 'after-save-hook 'backup-each-save))
 #+END_SRC
-* Helm
-[[https://github.com/emacs-helm/helm][Helm]] is a visual incremental-completion helper.
-** Core bindings
-#+BEGIN_SRC emacs-lisp
-  (req-package helm
-    :bind (("M-x" . helm-M-x)
-           ("C-x C-f" . helm-find-files)
-           ("C-x b" . helm-buffers-list)
-           ("C-c y" . helm-show-kill-ring)
-           ("C-x C-r" . helm-recentf)
-           ("C-x r l" . helm-bookmarks)
-           :map helm-map
-           ("C-;" . ace-jump-helm-line))
-    :config (require 'helm-config))
-#+END_SRC
-
-** Ace makes selection even faster
-#+BEGIN_SRC emacs-lisp
-    (req-package ace-jump-helm-line
-      :commands ace-jump-helm-line
-      :require helm)
-#+END_SRC
-
-** Have Helm show us keybinding info
-#+BEGIN_SRC emacs-lisp
-  (req-package helm-descbinds
-    :commands helm-descbinds
-    :bind (("C-h b" . helm-descbinds))
-    :require helm)
-#+END_SRC
-
 * Look and Feel
 ** Use badger-theme
 #+BEGIN_SRC emacs-lisp
@@ -156,9 +123,11 @@ or on unversioned files.
 
 ** Disable the menubar, toolbar and scrollbar
 #+BEGIN_SRC emacs-lisp
-  (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
+  (if (display-graphic-p)
+      (progn
+        (menu-bar-mode -1)
+        (tool-bar-mode -1)
+        (scroll-bar-mode -1)))
 #+END_SRC
 
 ** Disable startup messages
@@ -234,6 +203,119 @@ Matching closed brackets are inserted for any typed open bracket.
   (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
+* Helm
+[[https://github.com/emacs-helm/helm][Helm]] is a visual incremental-completion helper.
+** Core bindings
+#+BEGIN_SRC emacs-lisp
+  (req-package helm
+    :bind (("M-x" . helm-M-x)
+           ("C-x C-f" . helm-find-files)
+           ("C-x b" . helm-buffers-list)
+           ("C-c y" . helm-show-kill-ring)
+           ("C-x C-r" . helm-recentf)
+           ("C-x r l" . helm-bookmarks)
+           :map helm-map
+           ("C-;" . ace-jump-helm-line))
+    :config (require 'helm-config))
+#+END_SRC
+
+** Ace makes selection even faster
+#+BEGIN_SRC emacs-lisp
+    (req-package ace-jump-helm-line
+      :commands ace-jump-helm-line
+      :require helm)
+#+END_SRC
+
+** Have Helm show us keybinding info
+#+BEGIN_SRC emacs-lisp
+  (req-package helm-descbinds
+    :commands helm-descbinds
+    :bind (("C-h b" . helm-descbinds))
+    :require helm)
+#+END_SRC
+* Org-mode
+** Disable Code Evaluation Prompts
+#+BEGIN_SRC elisp
+  (setq org-confirm-babel-evaluate nil)
+  (setq org-confirm-shell-link-function nil)
+  (setq org-confirm-elisp-link-function nil)
+#+END_SRC
+** Navigation
+*** Stack-based Narrowing
+#+BEGIN_SRC emacs-lisp
+  (defvar knowt-narrow-stack (list))
+  (defvar knowt-after-narrow-hook (list))
+
+  (defun knowt-widen ()
+    (if knowt-narrow-stack
+        (progn
+          (if (= 1 (length knowt-narrow-stack))
+              (knowt-reset)
+            (let ((prev-region (pop knowt-narrow-stack)))
+              (widen)
+              (destructuring-bind (start end) prev-region
+                (narrow-to-region start end)
+                (knowt-fix-narrow)))))))
+
+  (defun knowt-fix-narrow ()
+    (beginning-of-buffer)
+    (outline-hide-subtree)
+    (outline-show-children)
+    (org-show-entry))
+
+  (defun knowt-narrow-to-subtree ()
+    (setq knowt-narrow-stack (push (list (point-min) (point-max)) knowt-narrow-stack))
+    (org-narrow-to-subtree)
+    (knowt-fix-narrow)
+    (if (> 0 (length knowt-after-narrow-hook))
+        (mapcar (lambda (f) (f)) 'knowt-after-narrow-hook)))
+
+  (defun knowt-narrow-regexp (term)
+    (beginning-of-buffer)
+    (search-forward-regexp (format "^[\\*].*%s" term))
+    (knowt-narrow-to-subtree))
+
+  (defun knowt-narrow-occur ()
+    (helm-occur)
+    (knowt-narrow-to-subtree))
+
+  (defun knowt-narrow-heading ()
+    (helm-org-in-buffer-headings)
+    (outline-hide-subtree)
+    (knowt-narrow-to-subtree))
+
+  (defun knowt-reset ()
+    (delete-other-windows)
+    (switch-to-buffer "knowt.org")
+    (widen)
+    (org-global-cycle 1)
+    (beginning-of-buffer)
+    (search-forward "* Help")
+    (org-global-cycle 3)
+    (beginning-of-buffer)
+    (setq knowt-narrow-stack (list)))
+#+END_SRC
+*** Add Core Keys
+#+BEGIN_SRC emacs-lisp
+  (define-key org-mode-map (kbd "M-n") 'outline-next-visible-heading)
+  (define-key org-mode-map (kbd "M-p") 'outline-previous-visible-heading)
+  (define-key org-mode-map (kbd "M-N") 'outline-next-heading)
+  (define-key org-mode-map (kbd "M-P") 'outline-previous-heading)
+
+  (define-key org-mode-map (kbd "H-s") '(lambda () (interactive) (knowt-narrow-to-subtree)))
+  (define-key org-mode-map (kbd "H-q") '(lambda () (interactive) (knowt-reset)))
+  (define-key org-mode-map (kbd "H-w") '(lambda () (interactive) (knowt-widen)))
+  (define-key org-mode-map (kbd "H-h") '(lambda () (interactive) (knowt-narrow-heading)))
+
+#+END_SRC
+*** Add Speed Keys
+#+BEGIN_SRC emacs-lisp
+    (setq org-use-speed-commands t)
+    (setq org-speed-commands-user (list (list "s" 'knowt-narrow-to-subtree)
+                                        (list "q" 'knowt-reset)
+                                        (list "w" 'knowt-widen)
+                                        (list "h" 'knowt-narrow-heading)))
+#+END_SRC
 * Finish package installations
 #+BEGIN_SRC emacs-lisp
   (req-package-finish)

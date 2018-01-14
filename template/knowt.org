@@ -1,71 +1,55 @@
-* Knowt Help
+* Help
+** Keyboard Controls
+*** File Operations
 
-  @ = right-option / f19
+   |---------+-----------+-----+-----|
+   | bind    | desc      | doc | src |
+   |---------+-----------+-----+-----|
+   | C-x C-f | Open File | [[elisp:(describe-function 'helm-find-files)][*]]   | [[elisp:(find-function 'helm-find-files)][*]]   |
+   | C-x C-s | Save File | [[elisp:(describe-function 'save-buffer)][*]]   | [[elisp:(find-function 'save-buffer)][*]]   |
+   | C-x C-w | Save As   | [[elisp:(describe-function 'write-file)][*]]   | [[elisp:(find-function 'write-file)][*]]   |
+   |---------+-----------+-----+-----|
 
-  |------+----------------+-----+-----|
-  | bind | desc           | doc | src |
-  |------+----------------+-----+-----|
-  | @ @  | Reset          | [[file:knowt-mode.el::defun reset][*]]   | [[elisp:(find-function 'reset)][*]]   |
-  | s    | Occur Search   | [[elisp:(describe-function 'helm-occur)][*]]   | [[elisp:(find-function 'helm-occur][*]]   |
-  | h    | Heading Search | [[elisp:(describe-function 'helm-org-in-buffer-headings)][*]]   | [[elisp:(find-function 'helm-org-in-buffer-headings)][*]]   |
-  |------+----------------+-----+-----|
+*** Basic Navigation
+    |------+---------------------+-----+-----|
+    | bind | desc                | doc | src |
+    |------+---------------------+-----+-----|
+    | C-f  | Forward Character   | [[elisp:(describe-function 'forward-char)][*]]   | [[elisp:(find-function 'forward-char)][*]]   |
+    | C-b  | Backwards Character | [[elisp:(describe-function 'backwards-char)][*]]   | [[elisp:(find-function 'backwards-char)][*]]   |
+    | M-f  | Forward Word        | [[elisp:(describe-function 'forward-word)][*]]   | [[elisp:(find-function 'forward-word)][*]]   |
+    | M-b  | Backwards Word      | [[elisp:(describe-function 'backwards-word)][*]]   | [[elisp:(find-function 'backwards-word)][*]]   |
+    | C-n  | Next Line           | [[elisp:(describe-function 'next-line)][*]]   | [[elisp:(find-function 'next-line)][*]]   |
+    | C-p  | Previous Line       | [[elisp:(describe-function 'previous-line)][*]]   | [[elisp:(find-function 'previous-line)][*]]   |
+    | C-a  | Start of Line       | [[elisp:(describe-function 'org-beginning-of-line)][*]]   | [[elisp:(find-function 'org-beginning-of-line)][*]]   |
+    | C-e  | End of Line         | [[elisp:(describe-function 'org-end-ofline)][*]]   | [[elisp:(find-function 'org-end-of-line)][*]]   |
 
-  [[elisp:(find-file (knowt-mode-org-file))][knowt-mode]] [[elisp:(reload)][↻]]
+    ([[elisp:(help-with-tutorial)][emacs tutorial]])
 
-** What is Knowt
+*** Document Navigation
 
-   Knowt is a tool for knowing what you know.
+    Binds are available at anytime
 
-   Built upon the all-powerful [[https://orgmode.org/][Org-mode]] for Emacs it provides a personal
-   knowledge-base in the form of a monolithic plain-text file.
+    Speed-keys are available when cursor at start of heading
 
-   - Keep track of what you need to do
-   - Quickly add and retrieve heirarchical data
-   - Throw away your bookmark manager
-   - Keep notes on acquiantances
-   - Curate a quote database
+    |------+-------+--------------------------+-----+-----|
+    | bind | speed | desc                     | doc | src |
+    |------+-------+--------------------------+-----+-----|
+    | M-n  | n     | Next Visible Heading     | [[elisp:(describe-function 'outline-next-visible-heading)][*]]   | [[elisp:(find-function 'outline-next-visible-heading)][*]]   |
+    | M-p  | p     | Previous Visible Heading | [[elisp:(describe-function 'outline-previous-visible-heading)][*]]   | [[elisp:(find-function 'outline-previous-visible-heading)][*]]   |
+    | M-N  |       | Next Heading             | [[elisp:(describe-function 'outline-next-heading)][*]]   | [[elisp:(find-function 'outline-next-heading)][*]]   |
+    | M-P  |       | Previous Heading         | [[elisp:(describe-function 'outline-previous-heading)][*]]   | [[elisp:(find-function 'outline-previous-heading)][*]]   |
+    | H-q  | q     | Reset View               | [[elisp:(describe-function 'knowt-reset)][*]]   | [[elisp:(find-function 'knowt-reset)][*]]   |
+    | H-w  | w     | Widen                    | [[elisp:(describe-function 'knowt-widen)][*]]   | [[elisp:(find-function 'knowt-widen)][*]]   |
+    | H-s  | s     | Narrow                   | [[elisp:(describe-function 'knowt-narrow-to-subtree)][*]]   | [[elisp:(find-function 'knowt-narrow-to-subtree][*]]   |
+    | H-h  | h     | Narrow to Heading Search | [[elisp:(describe-function 'knowt-narrow-heading)][*]]   | [[elisp:(find-function 'knowt-narrow-heading)][*]]   |
+    |------+-------+--------------------------+-----+-----|
 
-   The possibilities are endless!
+    ([[elisp:(org-speed-command-help)][all speedkeys]])
 
-** What's it like?
+** User Guide
+*** Quickstart
 
-   You maintain a single plain-text file =~/.knowt/knowt.org= in which you use
-   typical org-mode headers to organize your data:
-
-#+BEGIN_SRC org-mode
-* Work
-** Project A
-*** TODO fix that one thing
-*** DONE proof of concept
-*** WAITING get that thing approved
-** Project B
-*** TODO what is it
-    i don't even know
-* Research
-** Functional Programming
-*** Monads
-**** F# for fun and profit       :bm:
-#+END_SRC
-
-   Many people are familiar with Org-mode's basic outlining and todo
-   features. Maybe even they've even used the table formatting features!
-   Org-mode is so so much more. You can spend days learning about its agenda
-   aggregation reporting - but! not many people do.
-
-   Knowt tries to keep you in the document by instead leaning on the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Narrowing.html][Narrowing]]
-   and [[https://www.gnu.org/software/emacs/manual/html_node/eintr/Narrowing-advantages.html#Narrowing-advantages][Widening]] features of Emacs. With a bit of elisp, a number of quick
-   shortcut bindings are provided for searching and narrowing the view of the
-   document to just what is of interest. Of course, it is just as easy to then
-   restore the whole document.
-
-   By jumping around the document using powerful searches, you can organize a
-   ton of data however you want without losing track or suffering the headache
-   of multiple files sprawled about. Everything you know in one version
-   controlled place. :)
-
-** Quickstart
-
-   First, make sure you have either Emacs or Docker installed.
+   Make sure you have either Emacs or Docker installed.
 
    Clone the repository to install:
 
@@ -73,22 +57,146 @@
   git clone https://github.com/dustinlacewell/knowt.git ~/src/
 #+END_SRC
 
-   Now execute the script. On startup some templates will be placed in
+   (optional) Add the =knowt/bin= directory to your =$PATH=
+
+   Now execute the =knowt= script. Some starter-files will be placed in
    =~/.knowt= if there's nothing there yet.
 
-   A single argument is required, the path of the Knowt repository:
+   First-time startup may take a minute or two as packages are installed.
 
 #+BEGIN_SRC sh
 > bin/knowt ~/src/knowt
 Created template at ~/.knowt/knowt.org
-Created template at ~/.knowt/.emacs.d/init.org
+Created template at ~/.knowt/init.org
 #+END_SRC
 
-   - *knowt.org* : a starter knowt file to get you going (this file!)
-   - *init.org* : some nice starter emacs customizations
+*** What is Emacs
 
-   Emacs should have opened up and you should be looking at this document!
+    Emacs is a text-editor.
 
-* Work
+    Why can it seem overwhelming? In principle, it is actually quite
+    simple. There is a Buffer of text, with an active Major Mode and optional
+    Minor Modes. A Mode is simply a mapping of keyboard Binds to script
+    Functions. Those Functions in turn modify the Buffer. Basically a fancy
+    notepad. Of course, unlike notepad, those script Functions can do anything!
 
-** Tasks
+    So by visiting a Buffer and pressing keyboard Binds we cause Functions to
+    modify the Buffer.
+
+    For example, when you press the "a" key, most modes will call
+    =(insert-char "a")= which inserts the "a" character into the Buffer at the
+    Point. Pressing "control" and "p" at the same time calls =(previous-line)=
+    and so on.
+
+    You should stop here and do the [[elisp:(help-with-tutorial)][Tutorial]].
+
+      Info Files
+
+    - [[info:emacs#Screen][Understanding What's Displayed]]
+    - [[info:emacs][Basic Editing Skills]]
+    - [[info:emacs#Files][File Operations]]
+    - [[info:emacs#Buffers][Manipulating Buffers]]
+    - [[info:emacs#Windows][Managing Multiple Windows]]
+    - [[info:emacs#Search][Searching]]
+    - [[info:emacs#Killing][Killing and Yanking (copy/paste)]]
+
+      [[info:emacs][Full Documentation]]
+
+      External Resources
+
+    - [[https://www.masteringemacs.org/][Mastering Emacs]]
+    - [[http://kitchingroup.cheme.cmu.edu/blog/category/emacs/][John Kitchin's Blog]]
+    - [[http://sachachua.com/blog/category/emacs/][Sacha Chua's Blog]]
+    - [[http://planet.emacsen.org/][Planet Emacsen]]
+    - [[http://emacsrocks.com/][Emacs Rocks]]
+
+*** What is Org-Mode?
+
+    Org-mode is a Major Mode for Emacs.
+
+    It provides functionality for super-charging a plain-text document into a
+    capable organizational and task tracking tool.
+
+    Org-mode documents are organized into a tree of Headings which are denoted
+    with a number of asterisks. This document is full of them!
+
+    There are many more features of course - far far too many to cover
+    here. But a helpful directory has been compiled to get you started learning
+    all of the features:
+
+      Info Files
+
+    - [[info:org#Document Structure][Document Structure]]
+    - [[info:org#Tables][Tables]]
+    - [[info:org#TODO Items][TODO Items]]
+    - [[info:org#Hyperlinks][Creating Links]]
+
+      [[info:org][Full Documentation]]
+
+      External Resources
+
+    - [[https://www.youtube.com/channel/UCQp2VLAOlvq142YN3JO3y8w][John Kitchin on Youtube]]
+    - [[https://www.youtube.com/channel/UCfbGTpcJyEOMwKP-eYz3_fg][Rainer Konig on Youtube]]
+    - [[https://www.youtube.com/watch?v=peyx6LXk2rk&list=PL8tzorAO7s0he-pp7Y_JDl7-Kz2Qlr_Pj][New York Emacs Meetup Talks]]
+    - [[https://eschulte.github.io/org-scraps/][Org-mode Elisp Snippets]]
+
+*** So what is Knowt?
+
+    Knowt is Emacs pre-configured for Org-mode!
+
+    It stores all of your information in =~/.knowt=. On first-run, it will
+    create the following things if they don't already exist:
+
+    - =knowt.org= Org-mode file which contains all your data (this file!)
+
+    - =init.org= Emacs customization file
+
+    - =.emacs.d/= Folder to hold installed packages
+
+    In general, you will only need to worry about =knowt.org= unless you are
+    interested in creating your own elisp customizations.
+
+*** What's it like?
+
+    Knowt does not drastically change the core Org-mode experience. It simply
+    provides some baked configuration which provides a nice foundation for
+    using it.
+
+    So what's provided?
+
+    - Speedkeys
+
+      There is a very useful built-in feature for Org-mode called "Speedkeys"
+      which is disabled by default. It allows you to invoke Org-mode commands
+      with a single key when the Point is at the beginning of a Headline.
+
+      Knowt enables the Speedkey feature.
+
+      ([[*Document%20Navigation][Speedkey Binds]])
+
+    - Structured Narrowing
+
+      [[info:emacs#Narrowing][Narrowing]] is an Emacs feature where you hide all but a specific portion
+      of a buffer. Widening the buffer restores it.
+
+      Knowt improves this functionality by maintaining a stack or list of
+      narrowing regions. Now instead of widening restoring the entire Buffer,
+      it restores the previous narrow region.
+
+    - TODO Pre-configured Capture Templates
+
+** Next Steps
+
+   At this point you should start editing this document to serve your needs!
+
+   Some ideas are:
+
+   - Track your work tasks
+   - Track your personal goals
+   - Maintain your personal projects
+   - Keep a list of contacts
+   - Journal things that happen to you
+   - Remember the books and moves you've read
+   - Import your bookmarks
+   - Write a Thesis or some Fan-Fiction
+   - Create links that run scripts

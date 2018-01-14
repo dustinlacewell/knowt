@@ -22,7 +22,7 @@ def knowt_filename():
     return os.path.join(user_directory(), "knowt.org")
 
 def init_filename():
-    return os.path.join(emacs_directory(), "init.org")
+    return os.path.join(user_directory(), "init.org")
 
 def establish_user_directory():
     if not os.path.exists(user_directory()):
@@ -40,16 +40,18 @@ def establish_emacs_directory():
 
 def establish_init_file():
     if not os.path.exists(init_filename()):
-        src = os.path.join(source_directory(), "template", ".emacs.d", "init.org")
+        src = os.path.join(source_directory(), "template", "init.org")
         shutil.copyfile(src, init_filename())
         print "Created template at {}".format(init_filename)
 
 def user_app_strat():
     path = os.path.expanduser("~/Applications/Emacs.app/Contents/MacOS/Emacs")
+    print "User App:", path
     return path if os.path.exists(path) else None
 
 def emacs_strat():
     path = subprocess.check_output(["command", "-v", "emacs"])
+    print "Emacs App:", path
     return path if os.path.exists(path) else None
 
 def docker_strat():
@@ -79,11 +81,11 @@ if "__main__" == __name__:
     establish_init_file()
 
     try:
-        strategies = list(f() for f in (docker_strat, user_app_strat, emacs_strat, docker_strat))
+        strategies = list(f() for f in (user_app_strat, emacs_strat, docker_strat))
         print strategies
         command = next(item for item in strategies if item is not None)
         if isinstance(command, basestring):
-            os.execv(command, ("-q", "--load", os.path.join(source_directory(), "elisp", "init.el")))
+            os.execv(command, ("--no-site-lisp", "-q", "--load", os.path.join(source_directory(), "elisp", "init.el")))
         else:
             command()
     except StopIteration:

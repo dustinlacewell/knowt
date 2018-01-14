@@ -1,0 +1,27 @@
+#+TITLE:Knowt User Configuration
+
+This configuration is tangled and loaded after Knowt's core configuration.
+
+* Narrow Work
+  Create a specific binding for narrowing work info
+#+BEGIN_SRC emacs-lisp
+  (defun narrow-work ()
+    (interactive)
+    (knowt-mode-reset)
+    (knowt-mode-narrow-regexp "work")
+    (outline-show-children))
+#+END_SRC
+
+* Customize TODO Keywords
+#+BEGIN_SRC emacs-lisp
+  (defun set-agenda-keywords ()
+    (setq org-todo-keywords
+          '((sequence "TODO" "DOING" "DONE" "WAITING" "|" "CLOSED")))
+    (setq org-todo-keyword-faces
+          '(("TODO" . "red")
+            ("DOING" . (:foreground "cyan" :weight "bold"))
+            ("DONE" . (:foreground "green" :strike-through t))
+            ("WAITING" . (:foreground "Brown" :weight "bold" :slant oblique))
+            ("CLOSED" . (:foreground "grey" :strike-through t :slant italic)))))
+  (set-agenda-keywords)
+#+END_SRC
