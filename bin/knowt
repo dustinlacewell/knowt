@@ -45,6 +45,11 @@ def establish_init_file():
         shutil.copyfile(src, init_filename())
         print "Created template at {}".format(init_filename)
 
+def system_app_strat():
+    path = os.path.expanduser("/Applications/Emacs.app/Contents/MacOS/Emacs")
+    print "System App:", path
+    return path if os.path.exists(path) else None
+
 def user_app_strat():
     path = os.path.expanduser("~/Applications/Emacs.app/Contents/MacOS/Emacs")
     print "User App:", path
@@ -85,7 +90,7 @@ if "__main__" == __name__:
     establish_init_file()
 
     try:
-        strategies = list(f() for f in (user_app_strat, emacs_strat, docker_strat))
+        strategies = list(f() for f in (user_app_strat, system_app_strat, emacs_strat, docker_strat))
         print strategies
         command = next(item for item in strategies if item is not None)
         if isinstance(command, basestring):
