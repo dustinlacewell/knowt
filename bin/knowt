@@ -67,9 +67,12 @@ def docker_strat():
         print "DOCKER COMMAND", parts
         os.execvp(command, parts)
 
-    path = subprocess.check_output(["command", "-v", "docker"])
-    print "DOCKER PATH", path
-    return run_docker
+    try:
+        path = subprocess.check_output(["command", "-v", "docker"])
+        print "DOCKER PATH", path
+        return run_docker
+    except subprocess.CalledProcessError:
+        return None
 
 if "__main__" == __name__:
     # if len(sys.argv) < 2 and "KNOWT_SOURCE_DIRECTORY" not in os.environ:
