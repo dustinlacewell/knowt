@@ -1,10 +1,15 @@
 #!/usr/bin/env python
-
+from __future__ import print_function
 import os
 import shutil
 import subprocess
 import sys
 import shlex
+
+try:
+    basestring
+except NameError:
+    basestring = str
 
 
 def source_directory():
@@ -13,52 +18,64 @@ def source_directory():
         return sys.argv[1]
     return os.environ.get("KNOWT_SOURCE_DIRECTORY")
 
+
 def user_directory():
     return os.environ.get("KNOWT_USER_DIRECTORY", os.path.expanduser("~/.knowt"))
+
 
 def emacs_directory():
     return os.path.join(user_directory(), ".emacs.d")
 
+
 def knowt_filename():
     return os.path.join(user_directory(), "knowt.org")
 
+
 def init_filename():
     return os.path.join(user_directory(), "init.org")
+
 
 def establish_user_directory():
     if not os.path.exists(user_directory()):
         os.mkdir(user_directory())
 
+
 def establish_knowt_file():
     if not os.path.exists(knowt_filename()):
         src = os.path.join(source_directory(), "template", "knowt.org")
         shutil.copyfile(src, knowt_filename())
-        print "Created template at {}".format(knowt_filename())
+        print("Created template at {}".format(knowt_filename()))
+
 
 def establish_emacs_directory():
     if not os.path.exists(emacs_directory()):
         os.mkdir(emacs_directory())
 
+
 def establish_init_file():
     if not os.path.exists(init_filename()):
         src = os.path.join(source_directory(), "template", "init.org")
         shutil.copyfile(src, init_filename())
-        print "Created template at {}".format(init_filename)
+        print("Created template at {}".format(init_filename))
+
 
 def system_app_strat():
     path = os.path.expanduser("/Applications/Emacs.app/Contents/MacOS/Emacs")
-    print "System App:", path
+    print("System App:", path)
     return path if os.path.exists(path) else None
+
 
 def user_app_strat():
     path = os.path.expanduser("~/Applications/Emacs.app/Contents/MacOS/Emacs")
-    print "User App:", path
+    print("User App:", path)
     return path if os.path.exists(path) else None
 
+
 def emacs_strat():
-    path = subprocess.check_output(["command", "-v", "emacs"])
-    print "Emacs App:", path
+    path = subprocess.check_output(["command", "-v", "emacs"]).strip().decode()
+    print("Emacs App: {}".format(path))
     return path if os.path.exists(path) else None
+
 
 def docker_strat():
     def run_docker():
@@ -69,20 +86,18 @@ def docker_strat():
         parts = shlex.split(string)
         command = parts[0]
         args = parts[1:]
-        print "DOCKER COMMAND", parts
+        print("DOCKER COMMAND", parts)
         os.execvp(command, parts)
 
     try:
         path = subprocess.check_output(["command", "-v", "docker"])
-        print "DOCKER PATH", path
+        print("DOCKER PATH", path)
         return run_docker
     except subprocess.CalledProcessError:
         return None
 
+
 if "__main__" == __name__:
-    # if len(sys.argv) < 2 and "KNOWT_SOURCE_DIRECTORY" not in os.environ:
-    #     print "Must pass Knowt elisp source directory or provide KNOWT_SOURCE_DIRECTORY."
-    #     exit()
 
     establish_user_directory()
     establish_knowt_file()
@@ -91,11 +106,11 @@ if "__main__" == __name__:
 
     try:
         strategies = list(f() for f in (user_app_strat, system_app_strat, emacs_strat, docker_strat))
-        print strategies
+        print(strategies)
         command = next(item for item in strategies if item is not None)
         if isinstance(command, basestring):
             os.execv(command, ("--no-site-lisp", "-q", "--load", os.path.join(source_directory(), "elisp", "init.el")))
         else:
             command()
     except StopIteration:
-        print "Couldn't find an emacs to run!"
+        print("Couldn't find an emacs to run!")
