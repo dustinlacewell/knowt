@@ -61,19 +61,16 @@ def establish_init_file():
 
 def system_app_strat():
     path = os.path.expanduser("/Applications/Emacs.app/Contents/MacOS/Emacs")
-    print("System App:", path)
     return path if os.path.exists(path) else None
 
 
 def user_app_strat():
     path = os.path.expanduser("~/Applications/Emacs.app/Contents/MacOS/Emacs")
-    print("User App:", path)
     return path if os.path.exists(path) else None
 
 
 def emacs_strat():
     path = subprocess.check_output(["command", "-v", "emacs"]).strip().decode()
-    print("Emacs App: {}".format(path))
     return path if os.path.exists(path) else None
 
 
@@ -86,12 +83,10 @@ def docker_strat():
         parts = shlex.split(string)
         command = parts[0]
         args = parts[1:]
-        print("DOCKER COMMAND", parts)
         os.execvp(command, parts)
 
     try:
         path = subprocess.check_output(["command", "-v", "docker"])
-        print("DOCKER PATH", path)
         return run_docker
     except subprocess.CalledProcessError:
         return None
@@ -109,7 +104,9 @@ if "__main__" == __name__:
         print(strategies)
         command = next(item for item in strategies if item is not None)
         if isinstance(command, basestring):
-            os.execv(command, ("--no-site-lisp", "-q", "--load", os.path.join(source_directory(), "elisp", "init.el")))
+            os.execv(command, ("--no-site-lisp",
+                               "-q", "--load",
+                               os.path.join(source_directory(), "elisp", "init.el")))
         else:
             command()
     except StopIteration:
