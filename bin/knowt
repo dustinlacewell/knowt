@@ -13,7 +13,7 @@ except NameError:
 
 
 def source_directory():
-    return os.path.join(os.path.dirname(__file__), "..")
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), "..")
     if len(sys.argv) > 1:
         return sys.argv[1]
     return os.environ.get("KNOWT_SOURCE_DIRECTORY")
